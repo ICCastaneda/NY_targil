@@ -1,9 +1,9 @@
 import os
-import  json
+import json
 from flask import Flask, request
 from flask.helprs import jsonify, send_file
 import CONS
-import ms
+# import ms
 import DBAccess
 
 tf_port = int(CONS.PORT)
@@ -17,8 +17,8 @@ def main_index_html():
     return send_file("www/templates/index.html")
 
 
-@app.route('/add_event', methods=["POST"]
-def add_event();
+@app.route('/add_event', methods=["POST"])
+def add_event():
     title = request.args.get('title')
     date1 = request.args.get('date')
     desc = request.args.get('desc')
@@ -32,8 +32,8 @@ def add_event();
     return sj
 
 
-@app.route('/delete_event', methods=["POST"]
-def delete_event();
+@app.route('/delete_event', methods=["POST"])
+def delete_event():
     title1 = request.args.get('title')
     date1 = request.args.get('date')
     desc1 = request.args.get('desc')
@@ -52,8 +52,8 @@ def get_events():
     req = request
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
-    context = request.args.get("context")
-    sqlx, sqlx_count = DBAccess.bld_sql(start_date, end_date, context)
+    desc = request.args.get("desc")
+    sqlx, sqlx_count = DBAccess.bld_query_sql(start_date, end_date, desc)
     
     list_result = DBAccess.get_events(sqlx, sqlx_count)
     if list_result[0] == 'error':
@@ -65,7 +65,7 @@ def get_events():
 
 
 
-if __name__ == '__main__'
+if __name__ == '__main__':
     ms1 = "port number is {}".format(tf_port)
     print ms1
 
