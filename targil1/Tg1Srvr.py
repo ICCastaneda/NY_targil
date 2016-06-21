@@ -1,7 +1,8 @@
 import os
 import json
 from flask import Flask, request
-from flask.helprs import jsonify, send_file
+# from flask.helprs import jsonify, send_file
+from flask import jsonify, send_file
 import CONS
 # import ms
 import DBAccess
@@ -17,7 +18,7 @@ def main_index_html():
     return send_file("www/templates/index.html")
 
 
-@app.route('/add_event', methods=["POST"])
+@app.route('/add_event', methods=["GET"])   # "POST"
 def add_event():
     title = request.args.get('title')
     date1 = request.args.get('date')
@@ -32,7 +33,7 @@ def add_event():
     return sj
 
 
-@app.route('/delete_event', methods=["POST"])
+@app.route('/delete_event', methods=["GET"])    # "POST"
 def delete_event():
     title1 = request.args.get('title')
     date1 = request.args.get('date')
@@ -47,7 +48,7 @@ def delete_event():
     return sj
 
 
-@app.route('/get_events', method=["GET"])
+@app.route('/get_events', methods=["GET"])
 def get_events():
     req = request
     start_date = request.args.get("start_date")
