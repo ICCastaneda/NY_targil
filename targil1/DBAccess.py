@@ -5,22 +5,31 @@ import datetime
 import CONS
 
 
-def bld_sql(start_date, end_date, event_title):
-    where_str = None
+def bld_query_sql(start_date, end_date, desc):
+    str_where = "("
+    cnt = 0
     if start_date and end_date:
-        where_str = "event_date >= start_date and event_date <= end_date"
+        str_where += "event_date >= '{}' and event_date <= '{}'".\
+            format(start_date, end_date)
+        cnt += 1
     elif start_date and not end_date:
-        where_str = "event_date = '{}'".format(start_date)
+        str_where += "event_date = '{}'".format(start_date)
+        cnt += 1
     elif end_date:
-        where_str = "event_date = '{}'".format(end_date)
-    else:
-        where_str = "event_date > ' '"
+        str_where += "event_date = '{}'".format(end_date)
+        cnt += 1
 
-    if event_title:
-        where_str += " and event_title = '{}'".format(event_title)
+    if desc:
+        if cnt:
+            str_where += " and "
+        str_where += " desc = '{}'".format(desc)
+        cnt += 1
  
-    sqlx_count = "select count(*) from events where ({})".format(where_str)
-    sqlx = "select * from events where ({})".format(where_str)
+    if cnt:
+        str_where += ")"
+
+    sqlx_count = "select count(*) from {} where ({})".format(CONS.EVENTS_TABLE, str_where)
+    sqlx = "select * from {} where ({})".format(CONS.EVENTS_TABLE, str_where)
     return [sqlx, sqlx_count]
 
 
@@ -101,22 +110,24 @@ def delete_event(sqlx):
     return rmsg
 
 
-def get_events(sqlx_count, sqlx):
+def get_events(sqlx, sqlx_count):
 
     ap = db_create_connection()
-    ap.sqlx = sqlx
-    ap.op = 'get_data'
+    ap.sqlx = sqlx_count
+    ap.op = 'count'
     try:
         obj_count = {"count": -1}
-        rslt = db_exec_cur(ap)
-        for t in rslt[0]:
+        ap = db_exec_cur(ap)
+        for t in ap.result:
             obj_count["count"] = t[0]
-        
-        db_exec_cur(ap.cur, sqlx, "desc")
+
+        ap.sqlx = sqlx
+        ap.op = 'get_data'
+        db_exec_cur(ap)
     except Exception as e:
         raise "error reading the database"
 
-    rslt_list = convert_tuple(ap.result, obj_count)
+    rslt_list = convert_tuple(ap, obj_count)
     db_close_con(ap)
     return rslt_list
 
@@ -136,7 +147,7 @@ def convert_tuple(ap, obj_count):
     
 
 def db_create_connection():
-    ap = DBAccess()
+    ap = DBParms()
 
     ap.con = mysql.connector.connect(user=CONS.USER, password=CONS.PW,
                                      database=CONS.DB_NAME, host=CONS.HOST)
@@ -155,14 +166,17 @@ def db_close_con(ap):
 
 def db_exec_cur(ap):
     ap.cur.execute(ap.sqlx)
-    if ap.op == 'get_data':
+    if ap.op == 'get_data' or ap.op == 'count':
         ap.result = ap.cur.fetchall()
-        ap.desc = [x[0].lower for x in ap.cur.description] 
+        if ap.op == 'get_data':
+            # for x in ap.cur.description:
+            #    print "x,x[]0 = ", x, ' ', x[0]
+            ap.desc = [x[0] for x in ap.cur.description]
     
     return ap
 
 
-class DBAccess(object):
+class DBParms(object):
     con = None
     cur = None
     result = None
