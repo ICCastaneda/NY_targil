@@ -1,3 +1,6 @@
+"""
+    targil1 MariaDB interface functions
+"""
 # import mysql.connector as mariadb     # mysqldb   # MySQLdb
 # import mysqldb
 import mysql.connector
@@ -6,6 +9,10 @@ import CONS
 
 
 def bld_query_sql(start_date, end_date, desc):
+"""
+    build the sql for query of events either by dates
+    and or description
+"""
     str_where = "("
     cnt = 0
     if start_date and end_date:
@@ -35,6 +42,9 @@ def bld_query_sql(start_date, end_date, desc):
 
 
 def bld_add_sql(title1, date1, desc1):
+"""
+    build the add event sql 
+"""
     insert_str = "insert into tg1_events (event_title, event_date, event_desc) \
         values('{}', '{}', '{}');".format(title1, date1, desc1)
 
@@ -42,7 +52,9 @@ def bld_add_sql(title1, date1, desc1):
 
 
 def add_event(sqlx):
-
+"""
+    process the add event
+"""
     ap = db_create_connection()
     ap.sqlx = sqlx
     ap.op = 'insert'
@@ -61,6 +73,9 @@ def add_event(sqlx):
     return rmsg
 
 def bld_delete_sql(title1, date1, desc1):
+"""
+    build the add event sql 
+"""
     str_where = ""
     cnt = 0
     if title1:
@@ -92,7 +107,9 @@ def bld_delete_sql(title1, date1, desc1):
 
 
 def delete_event(sqlx):
-
+"""
+    process the delete event
+"""
     ap = db_create_connection()
     ap.sqlx = sqlx
     ap.op = 'delete'
@@ -112,7 +129,9 @@ def delete_event(sqlx):
 
 
 def get_events(sqlx, sqlx_count):
-
+"""
+    process the query of get events
+"""
     ap = db_create_connection()
     ap.sqlx = sqlx_count
     ap.op = 'count'
@@ -134,6 +153,10 @@ def get_events(sqlx, sqlx_count):
 
 
 def convert_tuple(ap, obj_count):
+"""
+    convert the the result of the sql which is
+    in tuple to jsons
+"""
     a_result = [obj_count]
     for t in ap.result:
         cnt1 = -1
@@ -148,6 +171,9 @@ def convert_tuple(ap, obj_count):
     
 
 def db_create_connection():
+"""
+   create the connection to Maria
+"""   
     ap = DBParms()
 
     ap.con = mysql.connector.connect(user=CONS.USER, password=CONS.PW,
@@ -157,27 +183,37 @@ def db_create_connection():
 
 
 def db_commit(ap):
+"""
+   commit changes to database 
+"""
     ap.con.commit()
 
 
 def db_close_con(ap):
-    ap.con.commit()
+"""
+    close the connection to the database
+"""
     ap.con.close()
 
 
 def db_exec_cur(ap):
+"""
+   execute the sql
+"""
     ap.cur.execute(ap.sqlx)
     if ap.op == 'get_data' or ap.op == 'count':
         ap.result = ap.cur.fetchall()
         if ap.op == 'get_data':
-            # for x in ap.cur.description:
-            #    print "x,x[]0 = ", x, ' ', x[0]
             ap.desc = [x[0] for x in ap.cur.description]
     
     return ap
 
 
 class DBParms(object):
+"""
+    Class which holds the parameters 
+    to access the database 
+"""    
     con = None
     cur = None
     result = None
