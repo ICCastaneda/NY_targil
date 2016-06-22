@@ -29,7 +29,8 @@ def bld_query_sql(start_date, end_date, desc):
         str_where += ")"
 
     sqlx_count = "select count(*) from {} where ({})".format(CONS.EVENTS_TABLE, str_where)
-    sqlx = "select * from {} where ({})".format(CONS.EVENTS_TABLE, str_where)
+    sqlx = "select * from {} where ({}) order by {}".\
+                 format(CONS.EVENTS_TABLE, str_where, CONS.DATE_COLUMN)
     return [sqlx, sqlx_count]
 
 
