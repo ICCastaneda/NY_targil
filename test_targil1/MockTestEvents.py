@@ -3,12 +3,14 @@ Test the Targil1 database access
 and other features of the system
 """
 import os
+import sys
+import traceback      #   os.path, time
 import json
 # from flask.helprs import jsonify, send_file
 import DBAccess
 
-FLAG_DO_ADD = True
-FLAG_DO_DELETE = True
+FLAG_DO_ADD = True        # flags to control the test process
+FLAG_DO_DELETE = True     # will be change to be part of the config file
 FLAG_DO_GET_EVENTS = True
 
 # will be converter to use python argparse and ConfigParser
@@ -29,7 +31,9 @@ LIST_GET_EVENTS = [eg1, eg2]
 
 
 def do_all_tests():
-
+    """
+    main test process
+    """
     try:
 
         if FLAG_DO_ADD:
@@ -53,17 +57,19 @@ def do_all_tests():
 
                 MockGetEvents(sd, ed, desc1)
 
-
         print "tests events system ended"
 
     except Exception as e:
         print "error in MockTestEvents"
+        print "------------"
+        traceback.print_exc(file=sys.stderr)
         raise e
 
+
 def MockGetEvents(start_date, end_date, desc):
-"""
+    """
     test the web url "/get_events" 
-"""     
+    """
     sqlx, sqlx_count = DBAccess.bld_query_sql(start_date, end_date, desc)
     
     list_result = DBAccess.get_events(sqlx, sqlx_count)
@@ -76,9 +82,9 @@ def MockGetEvents(start_date, end_date, desc):
 
 
 def MockDeleteEvent(title1, date1, desc1):
-"""
+    """
     test the web url "/delete_event" 
-"""     
+    """
      
     sqlx = DBAccess.bld_delete_sql(title1, date1, desc1)
 
@@ -92,9 +98,9 @@ def MockDeleteEvent(title1, date1, desc1):
 
 
 def MockAddEvent(title1, datee, desc1):
-"""
+    """
     test the web url "/add_event" 
-"""     
+    """
     sqlx = DBAccess.bld_add_sql(title1, datee, desc1)
 
     list_result = DBAccess.add_event(sqlx)
