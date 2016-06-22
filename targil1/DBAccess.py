@@ -9,11 +9,11 @@ import CONS
 
 
 def bld_query_sql(start_date, end_date, desc):
-"""
+    """
     build the sql for query of events either by dates
     and or description
-"""
-    str_where = "("
+    """
+    str_where = ""        # ("
     cnt = 0
     if start_date and end_date:
         str_where += "event_date >= '{}' and event_date <= '{}'".\
@@ -29,11 +29,11 @@ def bld_query_sql(start_date, end_date, desc):
     if desc:
         if cnt:
             str_where += " and "
-        str_where += " desc = '{}'".format(desc)
+        str_where += " event_desc = '{}'".format(desc)
         cnt += 1
  
-    if cnt:
-        str_where += ")"
+    # if cnt:
+    #    str_where += ")"
 
     sqlx_count = "select count(*) from {} where ({})".format(CONS.EVENTS_TABLE, str_where)
     sqlx = "select * from {} where ({}) order by {}".\
@@ -42,9 +42,9 @@ def bld_query_sql(start_date, end_date, desc):
 
 
 def bld_add_sql(title1, date1, desc1):
-"""
-    build the add event sql 
-"""
+    """
+    build the add event sql
+    """
     insert_str = "insert into tg1_events (event_title, event_date, event_desc) \
         values('{}', '{}', '{}');".format(title1, date1, desc1)
 
@@ -52,9 +52,9 @@ def bld_add_sql(title1, date1, desc1):
 
 
 def add_event(sqlx):
-"""
+    """
     process the add event
-"""
+    """
     ap = db_create_connection()
     ap.sqlx = sqlx
     ap.op = 'insert'
@@ -72,44 +72,39 @@ def add_event(sqlx):
     db_close_con(ap)
     return rmsg
 
+
 def bld_delete_sql(title1, date1, desc1):
-"""
+    """
     build the add event sql 
-"""
+    """
     str_where = ""
     cnt = 0
     if title1:
-        str_where += "(event_title = '{}'".format(title1)
+        str_where += "event_title = '{}'".format(title1)
         cnt += 1
     if date1:
         if cnt:
             str_where += " and "
-        else:
-            str += "("
         str_where += "event_date = '{}'".format(date1)
         cnt += 1
     if desc1:
         if cnt:
             str_where += " and "
-        else:
-            str += "("
         str_where += "event_desc = '{}'".format(desc1)
         cnt += 1
 
-    if cnt:
-        str_where += ")"
-    else:
+    if not cnt:
         return ""     # nothing to delete
 
-    delete_str = "delete from tg1_events where {};".format(str_where)
+    delete_str = "delete from tg1_events where ({});".format(str_where)
 
     return delete_str
 
 
 def delete_event(sqlx):
-"""
+    """
     process the delete event
-"""
+    """
     ap = db_create_connection()
     ap.sqlx = sqlx
     ap.op = 'delete'
@@ -121,7 +116,7 @@ def delete_event(sqlx):
         rmsg =  ["error", "error deleting event"]
 
     if not rmsg:
-        rmsg = ["success", "event added succesfully"]
+        rmsg = ["success", "event deleted successfully"]
         db_commit(ap)
 
     db_close_con(ap)
@@ -129,9 +124,9 @@ def delete_event(sqlx):
 
 
 def get_events(sqlx, sqlx_count):
-"""
+    """
     process the query of get events
-"""
+    """
     ap = db_create_connection()
     ap.sqlx = sqlx_count
     ap.op = 'count'
@@ -153,10 +148,10 @@ def get_events(sqlx, sqlx_count):
 
 
 def convert_tuple(ap, obj_count):
-"""
+    """
     convert the the result of the sql which is
     in tuple to jsons
-"""
+    """
     a_result = [obj_count]
     for t in ap.result:
         cnt1 = -1
@@ -171,9 +166,9 @@ def convert_tuple(ap, obj_count):
     
 
 def db_create_connection():
-"""
+    """
    create the connection to Maria
-"""   
+   """
     ap = DBParms()
 
     ap.con = mysql.connector.connect(user=CONS.USER, password=CONS.PW,
@@ -183,23 +178,23 @@ def db_create_connection():
 
 
 def db_commit(ap):
-"""
+    """
    commit changes to database 
-"""
+   """
     ap.con.commit()
 
 
 def db_close_con(ap):
-"""
+    """
     close the connection to the database
-"""
+    """
     ap.con.close()
 
 
 def db_exec_cur(ap):
-"""
+    """
    execute the sql
-"""
+   """
     ap.cur.execute(ap.sqlx)
     if ap.op == 'get_data' or ap.op == 'count':
         ap.result = ap.cur.fetchall()
@@ -210,10 +205,10 @@ def db_exec_cur(ap):
 
 
 class DBParms(object):
-"""
+    """
     Class which holds the parameters 
     to access the database 
-"""    
+    """
     con = None
     cur = None
     result = None
