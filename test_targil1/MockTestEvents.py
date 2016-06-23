@@ -44,6 +44,8 @@ def do_all_tests():
     """
     try:
 
+        mock_save_diary()     # save the diary for tests
+
         if FLAG_DO_ADD:
             for evx in LIST_ADD_EVENTS:
                 MockAddEvent(evx)
@@ -76,6 +78,14 @@ def do_all_tests():
         print "------------"
         traceback.print_exc(file=sys.stderr)
         raise e
+
+
+def mock_save_diary():
+    """
+    test saving the diary
+    """
+    rmsg = DBAccess.save_new_diary()
+    print 'mock_save_diary: ended: ' , rmsg
 
 
 def MockGetEvents(start_date, end_date, desc):
