@@ -39,6 +39,7 @@ def add_event():
         sj = jsonify({"add_event_error": list_result[1]})
     else:
         sj = jsonify({"add_event successeded": list_result[1]})
+        rmsg = DBAccess.save_new_diary()
     return sj
 
 
@@ -56,6 +57,7 @@ def delete_event():
         sj = jsonify({"delete_event_error": list_result[1]})
     else:
         sj = jsonify({"delete_event successeded": list_result[1]})
+        rmsg = DBAccess.save_new_diary()
     return sj
 
 
@@ -73,6 +75,7 @@ def update_event():
         sj = jsonify({"update_event_error": list_result[1]})
     else:
         sj = jsonify({"update_event successeded": list_result[1]})
+        rmsg = DBAccess.save_new_diary()
     return sj
 
 

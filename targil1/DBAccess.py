@@ -127,7 +127,32 @@ def delete_event(sqlx):
     return rmsg
 
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+def save_new_diary():
+    """
+    process the save of new diary after the DB changed
+    """
+    ap = db_create_connection()
+    sqlx = "SELECT * FROM {} INTO OUTFILE '{}'".format(CONS.EVENTS_TABLE, CONS.DIARY_FILE);
+    ap.sqlx = sqlx
+    ap.op = 'save_diary'
+    rmsg = ""
+    try:
+        db_exec_cur(ap)
+
+    except Exception as e:
+        e2 = "error saving the diary " + str(e)
+        # e1 = repr(e)
+        # e3 = e.msg
+        rmsg = ["error",  e2]
+
+    if not rmsg:
+        rmsg = ["success", "the diary was saved succesfully"]
+        db_commit(ap)
+
+    db_close_con(ap)
+    return rmsg
+
+
 def bld_update_sql(id1, title1, date1, desc1):
     """
     build the update event sql 
@@ -167,7 +192,7 @@ def update_event(sqlx):
     """
     ap = db_create_connection()
     ap.sqlx = sqlx
-    ap.op = 'delete'
+    ap.op = 'update'
     rmsg = ""
     try:
         db_exec_cur(ap)
@@ -182,7 +207,6 @@ def update_event(sqlx):
     db_close_con(ap)
     return rmsg
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 def get_events(sqlx, sqlx_count):
     """
