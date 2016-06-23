@@ -73,30 +73,34 @@ def add_event(sqlx):
     return rmsg
 
 
-def bld_delete_sql(title1, date1, desc1):
+def bld_delete_sql(id, title1, date1, desc1):
     """
-    build the add event sql 
+    build the delete event sql 
     """
     str_where = ""
     cnt = 0
-    if title1:
-        str_where += "event_title = '{}'".format(title1)
+    if id:
+        str_where = " id = {}".format(str(id))
         cnt += 1
-    if date1:
-        if cnt:
-            str_where += " and "
-        str_where += "event_date = '{}'".format(date1)
-        cnt += 1
-    if desc1:
-        if cnt:
-            str_where += " and "
-        str_where += "event_desc = '{}'".format(desc1)
-        cnt += 1
+    else:
+        if title1:
+            str_where += "event_title = '{}'".format(title1)
+            cnt += 1
+        if date1:
+            if cnt:
+                str_where += " and "
+            str_where += "event_date = '{}'".format(date1)
+            cnt += 1
+        if desc1:
+            if cnt:
+                str_where += " and "
+            str_where += "event_desc = '{}'".format(desc1)
+            cnt += 1
 
-    if not cnt:
-        return ""     # nothing to delete
-
-    delete_str = "delete from tg1_events where ({});".format(str_where)
+    if cnt:
+        delete_str = "delete from tg1_events where ({});".format(str_where)
+    else:
+        delete_str = ""    # nothing to delete
 
     return delete_str
 
@@ -122,6 +126,63 @@ def delete_event(sqlx):
     db_close_con(ap)
     return rmsg
 
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+def bld_update_sql(id1, title1, date1, desc1):
+    """
+    build the update event sql 
+    """
+    str_where = ""
+    str_set = ""
+    cnt = 0
+    if id:
+        str_where = " id = {}".format(str(id1))
+        if title1:
+            str_set += "event_title = '{}'".format(title1)
+            cnt += 1
+        if date1:
+            if cnt:
+                str_set += ", "
+            str_set += "event_date = '{}'".format(date1)
+            cnt += 1
+        if desc1:
+            if cnt:
+                str_set += ", "
+            str_set += "event_desc = '{}'".format(desc1)
+            cnt += 1
+
+        
+
+    if cnt:
+        update_str = "update tg1_events set {} where ({});".format(str_set, str_where)
+    else:
+        update_str = ""    # nothing to delete
+
+    return update_str
+
+
+def update_event(sqlx):
+    """
+    process the update event
+    """
+    ap = db_create_connection()
+    ap.sqlx = sqlx
+    ap.op = 'delete'
+    rmsg = ""
+    try:
+        db_exec_cur(ap)
+
+    except Exception as e:
+        rmsg =  ["error", "error updating event"]
+
+    if not rmsg:
+        rmsg = ["success", "event updating successfully"]
+        db_commit(ap)
+
+    db_close_con(ap)
+    return rmsg
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 def get_events(sqlx, sqlx_count):
     """

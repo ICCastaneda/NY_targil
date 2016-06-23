@@ -2,7 +2,7 @@
 Targil1 Flask server, support various options
 to access the targil1 database
 """
-import os
+# import os
 import json
 from flask import Flask, request
 # from flask.helprs import jsonify, send_file
@@ -24,14 +24,14 @@ def main_index_html():
     return send_file("www/templates/index.html")
 
 
-@app.route('/add_event', methods=["GET"])   # "POST"
+
+@app.route('/add_event', methods=["GET"]) 
 def add_event():
     """
     Add event function
     """
-    title = request.args.get('title')
-    date1 = request.args.get('date')
-    desc = request.args.get('desc')
+    data_json = json.loads(request.args.get('add_data'))
+    title, date1, desc = get_events_values(data_json)
     sqlx = DBAccess.bld_add_sql(title, date1, desc)
 
     list_result = DBAccess.add_event(sqlx)
@@ -47,16 +47,32 @@ def delete_event():
     """
     Delete event function
     """
-    title1 = request.args.get('title')
-    date1 = request.args.get('date')
-    desc1 = request.args.get('desc')
-    sqlx = DBAccess.bld_delete_sql(title1, date1, desc1)
+    data_json = json.loads(request.args.get('delete_data'))
+    id1, title, date1, desc = get_events_values(data_json, idp='yes')
+    sqlx = DBAccess.bld_delete_sql(id1, title1, date1, desc1)
 
     list_result = DBAccess.delete_event(sqlx)
     if list_result[0] == 'error':
         sj = jsonify({"delete_event_error": list_result[1]})
     else:
         sj = jsonify({"delete_event successeded": list_result[1]})
+    return sj
+
+
+@app.route('/update_event', methods=["GET"])
+def update_event():
+    """
+    Update event function
+    """
+    data_json = json.loads(request.args.get('update_data'))
+    id1, title, date1, desc = get_events_values(data_json, idp='yes')
+    sqlx = DBAccess.bld_update_sql(id1, title1, date1, desc1)
+
+    list_result = DBAccess.update_event(sqlx)
+    if list_result[0] == 'error':
+        sj = jsonify({"update_event_error": list_result[1]})
+    else:
+        sj = jsonify({"update_event successeded": list_result[1]})
     return sj
 
 
@@ -68,7 +84,7 @@ def get_events():
     req = request
     start_date = request.args.get("start_date")
     end_date = request.args.get("end_date")
-    desc = request.args.get("desc")
+    desc = request.args.get("event_desc")
     sqlx, sqlx_count = DBAccess.bld_query_sql(start_date, end_date, desc)
     
     list_result = DBAccess.get_events(sqlx, sqlx_count)
@@ -79,6 +95,22 @@ def get_events():
     return sj
 
 
+def get_events_values(data_json, idp='no'):
+    id1 = title = date1 = desc = ""
+    rl = []
+    if idp == 'yes':          # check for id if in json
+        if "id" in data_json:
+           id1 = data_json["id"]
+    if "event_title" in data_json:
+        title = data_json['event_title']
+    if "event_date" in data_json:
+        date1 = data_json['event_date']
+    if "event_desc" in data_json:
+        desc = data_json['event_desc']
+    if idp == 'yes':
+        rl.append(id1)
+    rl += [title, date1, desc]
+    return rl
 
 
 if __name__ == '__main__':
