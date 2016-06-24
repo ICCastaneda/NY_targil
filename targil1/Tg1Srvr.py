@@ -13,6 +13,10 @@ import DBAccess
 tf_port = int(CONS.PORT)
 app = Flask(__name__, static_folder='www', template_folder='www')
 
+# API
+# the api to all the web interface are dict(json) in the form of:
+# {["ID":"id",] "event_title":"title", "event_date":"date", "event_desc":"desc"}
+# The Api to the get_events are: start_date and or end_date and or event_desc
 
 @app.route('/')
 def main_index_html():
@@ -43,13 +47,14 @@ def add_event():
     return sj
 
 
-@app.route('/delete_event', methods=["GET"])    # "POST"
+@app.route('/delete_event', methods=["GET"])
 def delete_event():
     """
     Delete event function
     """
+    req = request
     data_json = json.loads(request.args.get('delete_data'))
-    id1, title, date1, desc = get_events_values(data_json, idp='yes')
+    id1, title1, date1, desc1 = get_events_values(data_json, idp='yes')
     sqlx = DBAccess.bld_delete_sql(id1, title1, date1, desc1)
 
     list_result = DBAccess.delete_event(sqlx)
@@ -66,8 +71,9 @@ def update_event():
     """
     Update event function
     """
+    req = request
     data_json = json.loads(request.args.get('update_data'))
-    id1, title, date1, desc = get_events_values(data_json, idp='yes')
+    id1, title1, date1, desc1 = get_events_values(data_json, idp='yes')
     sqlx = DBAccess.bld_update_sql(id1, title1, date1, desc1)
 
     list_result = DBAccess.update_event(sqlx)

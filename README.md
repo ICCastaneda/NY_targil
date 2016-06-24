@@ -1,48 +1,58 @@
-Synopsis
+This system manipulate the EVENTS database.
+adding, deleting, updating and listing the events.
+The sytem creat a new diary file on every cahnge of events
+and take backup of the database as neede, or will be intgrated
+in a night backup process.
 
-At the top of the file there should be a short introduction and/ or overview that explains what the project is. This description should match descriptions added for package managers (Gemspec, package.json, etc.)
+The API
+the api to all the web interface are dict(json) in the form of:
+{["ID":"id",] "event_title":"title", "event_date":"date", "event_desc":"desc"}
 
-Code Example
+The Api to the get_events are: start_date and or end_date and or event_desc
 
-Show what the library does as concisely as possible, developers should be able to figure out how your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+@app.route('/add_event', methods=["GET"]) 
+def add_event():
+
+@app.route('/delete_event', methods=["GET"])
+def delete_event():
+
+@app.route('/update_event', methods=["GET"])
+def update_event():
+
+@app.route('/get_events', methods=["GET"])
+def get_events():
 
 Motivation
 
-A short description of the motivation behind the creation and maintenance of the project. This should explain why the project exists.
+The project was cread as an exercise to maintain and manipulate diary database
 
 Installation
 
-Provide code examples and explanations of how to get the project.
+Clone the system from GitHub and follow the instruction to run it in the scripts folder
 
 API Reference
 
-Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
+See the above explanations
 
 Tests
 
-Describe and show how to run the tests with code examples.
+Run the test as describe in the scripts folder file run_TestEvents.bat
 
 Contributors
 
-Let people know how they can dive into the project, include important links to things like issue trackers, irc, twitter accounts if applicable.
-
-License
-
-A short snippet describing the license (MIT, Apache, etc.)
-
-
+This is a small project and done by me
 
 
 General remarks
 .- Testing of the database interface was done thru the test_targil1 system. 
-.- 
+
 
 Packages
 -----------------
 MySQL / MariaDB connector - http://dev.mysql.com/downloads/connector/python/
 
-Create Database on MariaDB
---------------------------
+.- How to create the Database on MariaDB
+-----------------------------------------
 .- create database targil1 character set utf8 collate utf8_general_ci;
 
 .- create table tg1_events (id int(11) not null auto_increment, event_title varchar(30) default null, event_date datetime default null, event_desc varchar(50), primary key (id) ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -51,7 +61,8 @@ Create Database on MariaDB
 .- GRANT ALL PRIVILEGES on targil1.* to ******@'%' IDENTIFIED BY '******' with grant option;
 .- GRANT ALL PRIVILEGES on *.* to ******@localhost IDENTIFIED BY '******' with grant option;
 
-Sample of the database
+
+.- Small sample of the database
 -----------------------
 MariaDB [targil1]> select * from tg1_events;
 +----+---------------+---------------------+----------------------------+
@@ -79,13 +90,13 @@ MariaDB [targil1]> select * from tg1_events;
 18 rows in set (0.00 sec)
 
 The folowing tesings were done using cURL:
--------------------------
+-------------------------------------------
 .- get_events - curl '127.0.0.1:5000/get_events?start_date=2016-01-01&end_date=2016-12-31'
-.- delete_event - curl '127.0.0.1:5000/delete_event?desc=aaaadesc'
-.- add event - curl '127.0.0.1:5000/add_event?desc=aaaadesc'
-.- add_event (w/get-worked) - curl '127.0.0.1:5000/add_event?add_data={"aaa":"adesc"}'
-.- add_event (w/get-worked) - @app.route('/add_event', methods=["GET"])  #worked
-.- curl  '127.0.0.1:5000/add_event?add_data={"aaa":"adesc", "bbbb":"ccccc", "desc":"thisdesc"}'
+
+.- add event (worked) - curl '127.0.0.1:5000/add_event?add_data={"event_title":"adesc", "event_date":"2091-01-01", "event_desc":"zzzzzzzzzzxxxxxxthisdesc"}'
+     .- add_event (w/get-worked) - @app.route('/add_event', methods=["GET"])  #worked
+
+.- delete_event (worked w/get) - curl '127.0.0.1:5000/delete_event?delete_data={"event_title":"aaaadesc"}'
 
 Results of cURL add_event
 -------------------------

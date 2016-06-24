@@ -3,6 +3,7 @@
 """
 # import mysql.connector as mariadb     # mysqldb   # MySQLdb
 # import mysqldb
+import os
 import mysql.connector
 import datetime
 import CONS
@@ -131,6 +132,17 @@ def save_new_diary():
     """
     process the save of new diary after the DB changed
     """
+
+    # this a FAST code, which can improve to delete version -1(.sav) and
+    # rename the current to filename.sav and to create the new diary
+    for filename in os.listdir(CONS.DIARY_FILE[:10]):
+        fn = CONS.EVENTS_DIR + "/" + filename
+        if filename[-3:] == "sav":
+            os.remove(fn)
+        if filename == CONS.DIARY_FILE[11:]:
+            fnr = CONS.EVENTS_DIR + "/" + filename[:-3] + "sav"
+            os.rename(fn, fnr)
+
     ap = db_create_connection()
     sqlx = "SELECT * FROM {} INTO OUTFILE '{}'".format(CONS.EVENTS_TABLE, CONS.DIARY_FILE);
     ap.sqlx = sqlx
@@ -141,8 +153,6 @@ def save_new_diary():
 
     except Exception as e:
         e2 = "error saving the diary " + str(e)
-        # e1 = repr(e)
-        # e3 = e.msg
         rmsg = ["error",  e2]
 
     if not rmsg:
@@ -198,7 +208,8 @@ def update_event(sqlx):
         db_exec_cur(ap)
 
     except Exception as e:
-        rmsg =  ["error", "error updating event"]
+        ms1 =  "error updating event: " + str(e)
+        rmsg =  ["error", ms1]
 
     if not rmsg:
         rmsg = ["success", "event updating successfully"]
@@ -225,6 +236,8 @@ def get_events(sqlx, sqlx_count):
         ap.op = 'get_data'
         db_exec_cur(ap)
     except Exception as e:
+        ms1 = "error reading the database" + str(e)
+        print ms1
         raise "error reading the database"
 
     rslt_list = convert_tuple(ap, obj_count)
