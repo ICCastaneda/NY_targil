@@ -1,0 +1,18 @@
+ e1 = repr(e)
+ e3 = e.msg
+
+
+        cmd = 'curl \'127.0.0.1:5000/add_event?add_data={"event_title":"adesc", "event_date":"20191-01-01", "event_desc":"zzzzzzzzzzxxxxxxthisdesc"}\''
+
+        print "before _run_command"
+        _run_command(cmd)
+        print "after _run_command"
+
+
+def _run_command(cmd):
+    """given shell command, returns communication tuple of stdout and stderr"""
+    return subprocess.Popen(cmd).communicate
+                            # stdout=subprocess.PIPE).communicate()
+                            # stderr=subprocess.PIPE).communicate()
+
+

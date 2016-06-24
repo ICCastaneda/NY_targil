@@ -3,10 +3,11 @@ Test the Targil1 database access
 and other features of the system
 """
 # import os
-import sys
-import traceback      #   os.path, time
-import json
+# import json
 # from flask.helprs import jsonify, send_file
+import sys
+import subprocess
+import traceback      #   os.path, time
 import DBAccess
 import Tg1Srvr
 
@@ -40,23 +41,33 @@ LIST_UPDATE_EVENTS = [eu1, eu2, eu3]
 
 def do_all_tests():
     """
-    main test process
+    main test process, 
+    code that i think should be added: ArgParse to pass the config file to the program
+    and ConfigParser to get the parms to test from a config external file
+    instead being build in the program.
     """
     try:
 
-        mock_save_diary()     # save the diary for tests
+        _MockDoCurlCmds()    # not implmented yet
+
+        _mock_save_diary()     # save the diary for tests
 
         if FLAG_DO_ADD:
             for evx in LIST_ADD_EVENTS:
-                MockAddEvent(evx)
+                _MockAddEvent(evx)
+                _MockCheckAddEvent(evx)      # the check functions haven't been implmented yet
 
         if FLAG_DO_UPDATE:
             for evx in LIST_UPDATE_EVENTS:
-                mock_update_events(evx)
+                _MockUpdateEvents(evx)
+                _MockCheckUpdateEvents(evx)
 
         if FLAG_DO_DELETE:
+           
             for evx in LIST_DELETE_EVENTS:
-                MockDeleteEvent(evx)
+                evx = _MockGetIdToDelete(evx)
+                _MockDeleteEvent(evx)
+                _MockCheckDeleteEvent(evx)
 
         if FLAG_DO_GET_EVENTS:
             for evx in LIST_GET_EVENTS:
@@ -69,18 +80,19 @@ def do_all_tests():
                 if "event_desc" in evx:
                     desc1 = evx["event_desc"]
 
-                MockGetEvents(sd, ed, desc1)
+                _MockGetEvents(sd, ed, desc1)
 
         print "tests events system ended"
 
     except Exception as e:
         print "error in MockTestEvents"
+        print "error:", str(e)
         print "------------"
         traceback.print_exc(file=sys.stderr)
         raise e
 
 
-def mock_save_diary():
+def _mock_save_diary():
     """
     test saving the diary
     """
@@ -88,7 +100,7 @@ def mock_save_diary():
     print 'mock_save_diary: ended: ' , rmsg
 
 
-def MockGetEvents(start_date, end_date, desc):
+def _MockGetEvents(start_date, end_date, desc):
     """
     test the web url "/get_events" 
     """
@@ -103,7 +115,23 @@ def MockGetEvents(start_date, end_date, desc):
     print "MockGetEvent ended"
 
 
-def mock_update_events(data_json):
+def _MockGetIdToDelete(evx):
+    """
+       read the database to get d to delete into the evx
+       dict, not implmented yet
+    """
+    return evx
+
+
+def _MockCheckUpdateEvents(data_json):
+    """
+    Check the update results, not implmented yet
+    """
+    return 'ok'
+    
+
+
+def _MockUpdateEvents(data_json):
     """
     test the web url "/update_event" 
     """
@@ -119,7 +147,14 @@ def mock_update_events(data_json):
     print "mock_update_event ended"
 
 
-def MockDeleteEvent(data_json):
+def _MockCheckDeleteEvent(data_json):
+    """
+    Check the delete results, not implmented yet
+    """
+    return 'ok'
+    
+
+def _MockDeleteEvent(data_json):
     """
     test the web url "/delete_event" 
     """
@@ -135,8 +170,14 @@ def MockDeleteEvent(data_json):
     return list_result[0]
     
 
+def _MockCheckAddEvent(data_json):
+    """
+    check the add event, not implmented yet
+    """
+    return 'ok'
 
-def MockAddEvent(data_json):
+
+def _MockAddEvent(data_json):
     """
     test the web url "/add_event" 
     """
@@ -151,14 +192,13 @@ def MockAddEvent(data_json):
     return list_result[0]
     
 
+def _MockDoCurlCmds():
+    """
+    not implmented yet
+    """
+    return 'ok'
+
+
 if __name__ == '__main__':
     print 'In MockTestEvents - main'
     do_all_tests()
-
-
-
-# list_events = MockGetEventsByTitle(title="title1")"
-# list_events = MockGetEventsByDates(start_date="20160101", end_date="20160215")
-# list_events = MockGetEventsByDatesAndTitle(start_date, end_date, title)
-# new_event = MockUpdateEvent(event_date="20160831")
-# del_event = MockDeleteEvent(event_date, event_title)
