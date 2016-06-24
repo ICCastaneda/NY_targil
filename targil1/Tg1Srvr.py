@@ -2,10 +2,8 @@
 Targil1 Flask server, support various options
 to access the targil1 database
 """
-# import os
 import json
 from flask import Flask, request
-# from flask.helprs import jsonify, send_file
 from flask import jsonify, send_file
 import CONS
 import DBAccess

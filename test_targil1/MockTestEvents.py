@@ -2,9 +2,6 @@
 Test the Targil1 database access
 and other features of the system
 """
-# import os
-# import json
-# from flask.helprs import jsonify, send_file
 import sys
 import subprocess
 import traceback      #   os.path, time

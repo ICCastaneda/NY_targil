@@ -1,8 +1,6 @@
 """
     targil1 MariaDB interface functions
 """
-# import mysql.connector as mariadb     # mysqldb   # MySQLdb
-# import mysqldb
 import os
 import mysql.connector
 import datetime

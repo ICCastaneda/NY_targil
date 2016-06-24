@@ -1,3 +1,12 @@
+# import os
+# import json
+# from flask.helprs import jsonify, send_file
+# import os
+# from flask.helprs import jsonify, send_file
+# import mysql.connector as mariadb     # mysqldb   # MySQLdb
+# import mysqldb
+
+
  e1 = repr(e)
  e3 = e.msg
 
