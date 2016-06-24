@@ -44,6 +44,10 @@ This is a small project and done by me
 
 
 General remarks
+This is a plan of code which should added to the system:
+using python logging, argparse, ConfigParse systems
+and more of improvment ton the code and the documentations 
+
 .- Testing of the database interface was done thru the test_targil1 system. 
 
 
