@@ -15,6 +15,7 @@ app = Flask(__name__, static_folder='www', template_folder='www')
 # the api to all the web interface are dict(json) in the form of:
 # {["ID":"id",] "event_title":"title", "event_date":"date", "event_desc":"desc"}
 # The Api to the get_events are: start_date and or end_date and or event_desc
+# date is api in the form:yyyy-mm-dd hh:mm
 
 @app.route('/')
 def main_index_html():
@@ -26,21 +27,24 @@ def main_index_html():
     return send_file("www/templates/index.html")
 
 
-
-@app.route('/add_event', methods=["GET"]) 
+@app.route('/add_event', methods=["POST"])      # GET"])
 def add_event():
     """
-    Add event function
+    Add event function, post request thru form
     """
-    data_json = json.loads(request.args.get('add_data'))
-    title, date1, desc = get_events_values(data_json)
+    # add_data_json = request.args.get('add_data')
+    # data_json = json.loads(add_data_json)
+    title = request.form.get('event_title')
+    date1 = request.form.get('event_date')
+    desc = request.form.get('event_desc')
+    # title, date1, desc = get_events_values(data_json)
     sqlx = DBAccess.bld_add_sql(title, date1, desc)
 
     list_result = DBAccess.add_event(sqlx)
     if list_result[0] == 'error':
-        sj = jsonify({"add_event_error": list_result[1]})
+        sj = jsonify({"add_event": list_result[1]})
     else:
-        sj = jsonify({"add_event successeded": list_result[1]})
+        sj = jsonify({"add_event": list_result[1]})
         rmsg = DBAccess.save_new_diary()
     return sj
 
