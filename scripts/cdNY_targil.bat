@@ -1,1 +1,0 @@
-cd C:\Users\Isra\Documents\GitHub\NY_targil
