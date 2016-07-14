@@ -1,0 +1,21 @@
+.- New repository, create new repository on git hub
+echo "# test1" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/ICCastaneda/targil1.git
+git push -u origin master
+
+
+
+.- git help -a
+.-git checkout -b <new_branch>
+.-git log --oneline --graph -11   - list commits etc.
+
+.- branch
+  .- git status, git add --all, git commit -m "this and that", 
+  .- git push -u origin devmock1  - push branch devmock1 upstream and there do merge
+  .- git branch - xhows the branches
+
+.- pull - on local master, to download the origin/master to local/master
+   do: git pull
